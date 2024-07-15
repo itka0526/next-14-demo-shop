@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import prisma from "./db";
-import { FormState, RegisterUserSchema } from "./types";
+import { FormState, LoginUserSchema, RegisterUserSchema, UserSchema } from "./types";
+import { createSession } from "./auth";
 
 export async function registerUser(prevState: FormState, formData: FormData): Promise<FormState> {
     const rawFormData = Object.fromEntries(formData.entries());
@@ -28,7 +29,10 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
             },
         });
         if (!user) {
-            throw new Error("Алдаа гарлаа.");
+            return {
+                errors: {},
+                message: "Та эхлээд бүртгүүлнэ үү.",
+            };
         }
     } catch (error) {
         console.error(error);
@@ -39,4 +43,44 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
     }
     // If all goes to plan this function should execute
     redirect("/login");
+}
+
+export async function loginUser(prevState: FormState, formData: FormData): Promise<FormState> {
+    const rawFormData = Object.fromEntries(formData.entries());
+    // Validating data using zod
+    const validatedFields = LoginUserSchema.safeParse(rawFormData);
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Алдаатай талбаруудтай байна. Нэвтрэлт амжилтгүй боллоо.",
+        };
+    }
+    let isAdmin = false;
+    try {
+        // Finding the user
+        const { email, password } = validatedFields.data;
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return {
+                errors: {},
+                message: "Та эхлээд бүртгүүлнэ үү.",
+            };
+        }
+        // Check passwords
+        if (user.password !== password) {
+            return {
+                errors: {},
+                message: "Нууц үг буруу байна.",
+            };
+        }
+        await createSession(user);
+        isAdmin = user.role === "ADMIN";
+    } catch (error) {
+        console.error(error);
+        return {
+            errors: {},
+            message: "Сервер дээр алдаа гарлаа.",
+        };
+    }
+    redirect(isAdmin ? "/dashboard" : "/");
 }

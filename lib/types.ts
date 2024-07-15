@@ -24,7 +24,15 @@ export const RegisterUserSchema = UserSchema.omit({ id: true, createdAt: true, u
         }
     });
 
+export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true, name: true });
+
 export type FormState = {
-    errors?: typeToFlattenedError<z.infer<typeof RegisterUserSchema>>["fieldErrors"];
+    errors?: typeToFlattenedError<z.infer<typeof RegisterUserSchema> | z.infer<typeof LoginUserSchema>>["fieldErrors"];
     message?: string | null;
+};
+
+export type SessionPayload = {
+    userId: string | number;
+    userRole: string;
+    expiresAt: Date;
 };

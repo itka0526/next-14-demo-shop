@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 
 export function RegisterForm() {
     const initialState: FormState = { message: null, errors: {} };
-    const [formState, formAction] = useFormState(registerUser, initialState);
+    const [formState, formAction, isPending] = useFormState(registerUser, initialState);
     if (formState.message) {
         toast.error(formState.message);
     }
@@ -61,7 +61,7 @@ export function RegisterForm() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full" aria-disabled={isPending}>
                         Бүртгүүлэх
                     </Button>
                 </CardFooter>

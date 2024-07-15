@@ -8,11 +8,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  email     String   @unique
+  id        String    @id @default(cuid())
+  name      String    @unique
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role      String   @default("USER")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  role      String    @default("USER")
+  Session   Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  userRole  String   @default("USER")
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
