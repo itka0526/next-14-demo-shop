@@ -7,21 +7,46 @@ datasource db {
   url      = "file:./sqlite.db"
 }
 
+// Users
 model User {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  email     String    @unique
+  id        String   @id @default(cuid())
+  name      String   @unique
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  role      String    @default("USER")
-  Session   Session[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      String   @default("USER")
 }
 
-model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  userRole  String   @default("USER")
-  expiresAt DateTime
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// Products
+model Product {
+  id          Int                       @id @default(autoincrement())
+  title       String
+  description String
+  imageUrl    String
+  price       Int
+  categories  SubCategoriesOnProducts[]
+}
+
+model SubCategory {
+  id              Int                       @id @default(autoincrement())
+  categoryId      Int
+  subCategoryName String
+  category        Category                  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products        SubCategoriesOnProducts[]
+}
+
+model SubCategoriesOnProducts {
+  postId     Int
+  categoryId Int
+  post       Product     @relation(fields: [postId], references: [id])
+  category   SubCategory @relation(fields: [categoryId], references: [id])
+  assignedAt DateTime    @default(now())
+
+  @@id([postId, categoryId])
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  subCategories SubCategory[]
 }
