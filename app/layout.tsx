@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import Link from "next/link";
+import { NavbarButtons } from "@/components/ui/navbarButtons";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +21,54 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <Toaster position="bottom-right" />
-                <main className="flex min-h-screen flex-col items-center justify-between p-24">{children}</main>
+                <div className="drawer">
+                    <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+                    <div className="drawer-content flex flex-col">
+                        {/* Navbar */}
+                        <div className="navbar bg-base-300 w-full">
+                            <div className="flex-none lg:hidden">
+                                <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        className="inline-block h-6 w-6 stroke-current"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                    </svg>
+                                </label>
+                            </div>
+                            <div className="mx-2 flex-1 px-2">
+                                <Link href="/">
+                                    <h2>Demo</h2>
+                                </Link>
+                            </div>
+                            <div className="hidden flex-none lg:block">
+                                <ul className="menu menu-horizontal">
+                                    <NavbarButtons />
+                                </ul>
+                            </div>
+                        </div>
+                        <main className="flex min-h-screen flex-col items-center justify-between px-24">{children}</main>
+                    </div>
+                    <div className="drawer-side">
+                        <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
+                        <ul className="menu bg-base-200 min-h-full w-80 p-4">
+                            {/* Sidebar content here */}
+                            <li>
+                                <a>Sidebar Item 1</a>
+                            </li>
+                            <li>
+                                <a>Sidebar Item 2</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <footer className="footer footer-center bg-base-300 text-base-content p-4">
+                    <aside>
+                        <p>Copyright © ${new Date().getFullYear()} - All right reserved by ACME Industries Ltd</p>
+                    </aside>
+                </footer>
             </body>
         </html>
     );

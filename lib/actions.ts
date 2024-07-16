@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import prisma from "./db";
 import { FormState, LoginUserSchema, RegisterUserSchema, UserSchema } from "./types";
 import { createSession } from "./auth";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function registerUser(prevState: FormState, formData: FormData): Promise<FormState> {
     const rawFormData = Object.fromEntries(formData.entries());
@@ -35,6 +36,21 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
             };
         }
     } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            switch (error.code) {
+                // https://www.prisma.io/docs/orm/reference/error-reference
+                case "P2002":
+                    return {
+                        errors: {},
+                        message: "Хэрэглэгч аль хэдийн бүртгэлтэй байна.",
+                    };
+                default:
+                    return {
+                        errors: {},
+                        message: "Өгөгдлийн санд одоогоор бүргэх боломжгүй байна.",
+                    };
+            }
+        }
         console.error(error);
         return {
             errors: {},
@@ -73,8 +89,8 @@ export async function loginUser(prevState: FormState, formData: FormData): Promi
                 message: "Нууц үг буруу байна.",
             };
         }
-        await createSession(user);
-        isAdmin = user.role === "ADMIN";
+        const session = await createSession(user);
+        isAdmin = session.userRole === "ADMIN";
     } catch (error) {
         console.error(error);
         return {

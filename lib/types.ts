@@ -1,3 +1,4 @@
+import { SessionOptions } from "iron-session";
 import { typeToFlattenedError, z } from "zod";
 
 export const UserSchema = z.object({
@@ -35,4 +36,17 @@ export type SessionPayload = {
     userId: string | number;
     userRole: string;
     expiresAt: Date;
+};
+
+export interface SessionData {
+    userId: string | null;
+    userRole: string;
+}
+
+export const sessionOptions: SessionOptions = {
+    password: process.env.SECRET ?? "development",
+    cookieName: "cookie-monster",
+    cookieOptions: {
+        secure: true,
+    },
 };
