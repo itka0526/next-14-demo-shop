@@ -62,9 +62,6 @@ export default function RootLayout({
                         <ul className="menu bg-base-200 min-h-full w-80 p-4">
                             {/* Sidebar content here */}
                             <CategorySidebar />
-                            <ul className="bg-background p-4 my-4 rounded-md flex-col space-y-2 lg:hidden max-lg:flex">
-                                <NavbarButtons />
-                            </ul>
                         </ul>
                     </div>
                 </div>
