@@ -1,20 +1,25 @@
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { Product } from "@prisma/client";
+import Link from "next/link";
 
 export function ProductCard({ title, description, imageUrl, price }: Product) {
     return (
-        <div className="grid gap-4 bg-card p-4 rounded-lg shadow-sm">
-            <Image src={imageUrl} alt="Cozy Blanket" width={300} height={300} className="rounded-md object-cover w-full aspect-square" />
-            <div className="grid gap-2">
-                <h3 className="font-semibold text-lg">{title} </h3>
-                <p className="text-muted-foreground text-sm">{description}</p>
-                <div className="flex items-center justify-between">
-                    <span className="font-semibold text-2xl">{price}₮</span>
-                    <Button variant="outline" className="px-4 py-2">
-                        Сагсанд нэмэх
-                    </Button>
-                </div>
+        <div className="relative overflow-hidden rounded-lg group">
+            {/** TODO: Implement details page. */}
+            <Link href="/" className="absolute inset-0 z-0" prefetch={false}>
+                <span className="sr-only">View {title}</span>
+            </Link>
+            <Image
+                src={imageUrl}
+                alt={title}
+                width={400}
+                height={300}
+                className="object-cover w-full h-60 group-hover:opacity-50 transition-opacity"
+            />
+            <div className="p-4 bg-background">
+                <h3 className="text-lg font-semibold">{title}</h3>
+                <p className="text-sm text-muted-foreground">{description}</p>
+                <h4 className="text-base font-semibold">{price}₮</h4>
             </div>
         </div>
     );

@@ -5,6 +5,7 @@ import "./globals.css";
 import Link from "next/link";
 import { NavbarButtons } from "@/components/ui/navbarButtons";
 import { CategorySidebar } from "@/components/category/category-sidebar";
+import { CollapsibleSidebar } from "@/components/ui/collapsable-sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,8 @@ export default function RootLayout({
             <body className={inter.className}>
                 <Toaster position="bottom-right" />
                 <div className="drawer">
-                    <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+                    <CollapsibleSidebar />
+                    {/* <input id="my-drawer-3" type="checkbox" className="drawer-toggle" /> */}
                     <div className="drawer-content flex flex-col">
                         {/* Navbar */}
                         <nav className="navbar bg-base-300 w-full">
@@ -35,7 +37,7 @@ export default function RootLayout({
                                         </Link>
                                     </div>
                                     <div className="hidden flex-none lg:block">
-                                        <ul className="menu menu-horizontal">
+                                        <ul className="menu menu-horizontal space-x-2">
                                             <NavbarButtons />
                                         </ul>
                                     </div>
@@ -55,7 +57,7 @@ export default function RootLayout({
                                 </div>
                             </div>
                         </nav>
-                        <main className="flex min-h-screen flex-col items-center justify-between px-24">{children}</main>
+                        <main className="flex min-h-screen flex-col items-center justify-between px-16">{children}</main>
                     </div>
                     <div className="drawer-side">
                         <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
