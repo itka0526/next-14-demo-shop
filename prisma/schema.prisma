@@ -20,36 +20,27 @@ model User {
 
 // Products
 model Product {
-  id          Int    @id @default(autoincrement())
-  title       String
-  description String
-  imageUrl    String
-  price       Int
-  // categories  SubCategoriesOnProducts[]
+  id            Int         @id @default(autoincrement())
+  subCategoryId Int
+  title         String
+  description   String
+  imageUrl      String      @default("/placeholder.svg")
+  price         Int
+  categories    SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
 }
 
 model SubCategory {
-  id                     Int      @id @default(autoincrement())
+  id                     Int       @id @default(autoincrement())
   categoryId             Int
-  subCategoryDisplayName String   @default("")
-  subCategoryName        String   @default("")
-  category               Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  // products        SubCategoriesOnProducts[]
+  subCategoryDisplayName String    @default("")
+  subCategoryName        String    @unique @default("")
+  category               Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products               Product[]
 }
-
-// model SubCategoriesOnProducts {
-//   postId     Int
-//   categoryId Int
-//   post       Product     @relation(fields: [postId], references: [id])
-//   category   SubCategory @relation(fields: [categoryId], references: [id])
-//   assignedAt DateTime    @default(now())
-
-//   @@id([postId, categoryId])
-// }
 
 model Category {
   id                  Int           @id @default(autoincrement())
   categoryDisplayName String        @default("")
-  categoryName        String        @default("")
+  categoryName        String        @unique @default("")
   subCategories       SubCategory[]
 }
