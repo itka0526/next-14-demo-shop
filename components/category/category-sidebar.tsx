@@ -2,15 +2,17 @@
 
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Link from "next/link";
-import { NavbarButtons } from "./ui/navbarButtons";
+import { NavbarButtons } from "../ui/navbarButtons";
 import prisma from "@/lib/db";
 
-export async function CategorySidebar() {
+export async function CategorySidebar({ unique = false, categoryName = "" }: { unique?: boolean; categoryName?: string }) {
     const data = await prisma.category.findMany({
+        where: unique ? { categoryName } : {},
         select: {
             id: true,
             categoryName: true,
             categoryDisplayName: true,
+
             subCategories: {
                 select: {
                     id: true,
@@ -20,7 +22,6 @@ export async function CategorySidebar() {
             },
         },
     });
-
     return (
         <>
             <div className="bg-background p-4 my-4 rounded-md flex-col space-y-2">
@@ -30,7 +31,7 @@ export async function CategorySidebar() {
                 <div className="flex-1 overflow-auto ">
                     {data.map(({ id: categoryId, categoryName, subCategories, categoryDisplayName }) => {
                         return (
-                            <Accordion type="single" collapsible key={`categoryId-${categoryId}`}>
+                            <Accordion type="single" collapsible={!unique} key={`categoryId-${categoryId}`}>
                                 <AccordionItem value="electronics">
                                     <AccordionTrigger className="flex items-center justify-between px-6 py-4 hover:bg-muted transition-colors">
                                         <Link href={`/products/${categoryName}`} className="flex items-center gap-4" prefetch={false}>

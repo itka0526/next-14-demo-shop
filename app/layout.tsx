@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Link from "next/link";
 import { NavbarButtons } from "@/components/ui/navbarButtons";
-import { CategorySidebar } from "@/components/category-sidebar";
+import { CategorySidebar } from "@/components/category/category-sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
