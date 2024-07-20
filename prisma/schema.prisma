@@ -27,6 +27,7 @@ model Product {
   imageUrl      String      @default("/placeholder.svg")
   price         Int
   categories    SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  featured      Boolean     @default(false)
 }
 
 model SubCategory {
@@ -43,4 +44,12 @@ model Category {
   categoryDisplayName String        @default("")
   categoryName        String        @unique @default("")
   subCategories       SubCategory[]
+}
+
+model NewsletterSubscriber {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  subscribed Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

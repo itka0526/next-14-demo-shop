@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import prisma from "./db";
-import { FormState, LoginUserSchema, RegisterUserSchema, UserSchema } from "./types";
+import { FormState, LoginUserSchema, RegisterUserSchema, SubscribeToNewsLetterSchema, UserSchema } from "./types";
 import { createSession } from "./auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -20,7 +20,7 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
     try {
         const { email, name, password } = validatedFields.data;
         const currentDate = new Date().toISOString();
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 email,
                 name,
@@ -29,12 +29,6 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
                 updatedAt: currentDate,
             },
         });
-        if (!user) {
-            return {
-                errors: {},
-                message: "Та эхлээд бүртгүүлнэ үү.",
-            };
-        }
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
             switch (error.code) {
@@ -47,7 +41,7 @@ export async function registerUser(prevState: FormState, formData: FormData): Pr
                 default:
                     return {
                         errors: {},
-                        message: "Өгөгдлийн санд одоогоор бүргэх боломжгүй байна.",
+                        message: "Өгөгдлийн санд одоогоор бүртгэх боломжгүй байна.",
                     };
             }
         }
@@ -99,4 +93,42 @@ export async function loginUser(prevState: FormState, formData: FormData): Promi
         };
     }
     redirect(isAdmin ? "/dashboard" : "/");
+}
+
+export async function subscribeToNewsletter(prevState: FormState, formData: FormData) {
+    const rawFormData = Object.fromEntries(formData.entries());
+    const validatedFields = SubscribeToNewsLetterSchema.safeParse(rawFormData);
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Алдаа гарлаа.",
+        };
+    }
+    try {
+        const { email } = validatedFields.data;
+        const currentDate = new Date().toISOString();
+        await prisma.newsletterSubscriber.create({ data: { email, createdAt: currentDate, updatedAt: currentDate } });
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            switch (error.code) {
+                // https://www.prisma.io/docs/orm/reference/error-reference
+                case "P2002":
+                    return {
+                        errors: {},
+                        message: "Та аль хэдийн хамрагдсан байна.",
+                    };
+                default:
+                    return {
+                        errors: {},
+                        message: "Өгөгдлийн санд одоогоор бүртгэх боломжгүй байна.",
+                    };
+            }
+        }
+        console.error(error);
+        return {
+            errors: {},
+            message: "Сервер дээр алдаа гарлаа.",
+        };
+    }
+    return prevState;
 }

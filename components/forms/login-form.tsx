@@ -8,6 +8,7 @@ import { useFormState } from "react-dom";
 import { loginUser } from "@/lib/actions";
 import { toast } from "react-hot-toast";
 import { FormState } from "@/lib/types";
+import { useEffect } from "react";
 
 export function LoginForm() {
     const initialState: FormState = { message: null, errors: {} };
@@ -15,6 +16,9 @@ export function LoginForm() {
     if (formState.message) {
         toast.error(formState.message);
     }
+    useEffect(() => {
+        console.log(isPending);
+    }, [isPending]);
     return (
         <form className="flex items-center justify-center h-screen bg-background" action={formAction}>
             <Card className="w-full max-w-md p-6 sm:p-8">
