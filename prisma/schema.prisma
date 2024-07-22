@@ -20,21 +20,22 @@ model User {
 
 // Products
 model Product {
-  id            Int         @id @default(autoincrement())
-  subCategoryId Int
-  title         String
-  description   String
-  imageUrl      String      @default("/placeholder.svg")
-  price         Int
-  categories    SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
-  featured      Boolean     @default(false)
+  id                 Int         @id @default(autoincrement())
+  subCategoryId      Int
+  productDisplayName String      @default("")
+  productName        String      @unique @default(uuid())
+  description        String      @default("")
+  imageUrl           String      @default("/placeholder.svg")
+  price              Int
+  categories         SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  featured           Boolean     @default(false)
 }
 
 model SubCategory {
   id                     Int       @id @default(autoincrement())
   categoryId             Int
   subCategoryDisplayName String    @default("")
-  subCategoryName        String    @unique @default("")
+  subCategoryName        String    @unique @default(uuid())
   category               Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   products               Product[]
 }
@@ -42,7 +43,7 @@ model SubCategory {
 model Category {
   id                  Int           @id @default(autoincrement())
   categoryDisplayName String        @default("")
-  categoryName        String        @unique @default("")
+  categoryName        String        @unique @default(uuid())
   subCategories       SubCategory[]
 }
 

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { NavbarButtons } from "@/components/ui/navbarButtons";
 import { CategorySidebar } from "@/components/category/category-sidebar";
 import { CollapsibleSidebar } from "@/components/ui/collapsable-sidebar";
+import Image from "next/image";
+import logoIcon from "@/public/logo.svg";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,7 +35,7 @@ export default function RootLayout({
                                 <div className="flex w-full h-full items-center">
                                     <div className="mx-2 flex-1 px-2">
                                         <Link href="/">
-                                            <h2>Demo</h2>
+                                            <Image alt="logo.svg" src={logoIcon} priority height={72} />
                                         </Link>
                                     </div>
                                     <div className="hidden flex-none lg:block">

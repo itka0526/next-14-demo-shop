@@ -10,7 +10,7 @@ export default async function Home() {
     const popularCategories = await prisma.category.findMany({ select: { id: true, categoryName: true, categoryDisplayName: true } });
     return (
         <div className="flex flex-col">
-            <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+            <section className="w-full py-12 md:py-24 lg:py-32 bg-muted mt-4">
                 <div className="container grid md:grid-cols-2 gap-8 px-4 md:px-6">
                     <div className="flex flex-col justify-center space-y-4">
                         <div className="space-y-6">

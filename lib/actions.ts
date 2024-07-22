@@ -107,7 +107,16 @@ export async function subscribeToNewsletter(prevState: FormState, formData: Form
     try {
         const { email } = validatedFields.data;
         const currentDate = new Date().toISOString();
-        await prisma.newsletterSubscriber.create({ data: { email, createdAt: currentDate, updatedAt: currentDate } });
+        const subscriberInfo = await prisma.newsletterSubscriber.create({
+            data: { email, createdAt: currentDate, updatedAt: currentDate },
+            select: { email: true },
+        });
+        if (subscriberInfo) {
+            return {
+                errors: {},
+                message: `'${subscriberInfo.email}' амжилттай бүртгэгдлээ.`,
+            };
+        }
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
             switch (error.code) {

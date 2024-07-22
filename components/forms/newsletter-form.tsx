@@ -11,7 +11,11 @@ export function Newsletter() {
     const initialState: FormState = { message: null, errors: {} };
     const [formState, formAction, isPending] = useFormState(subscribeToNewsletter, initialState);
     if (formState.message) {
-        toast.error(formState.message);
+        if (formState.errors && Object.keys(formState.errors).length > 0) {
+            toast.error(formState.message);
+        } else {
+            toast.success(formState.message);
+        }
     }
     return (
         <section className="w-full py-12 md:py-24 lg:py-32">
@@ -31,6 +35,11 @@ export function Newsletter() {
                             Нэгдэх
                         </Button>
                     </form>
+                    {formState.errors?.email?.map((err, idx) => (
+                        <p className="text-sm text-destructive" key={`${err}${idx}`}>
+                            {err}
+                        </p>
+                    ))}
                 </div>
             </div>
         </section>

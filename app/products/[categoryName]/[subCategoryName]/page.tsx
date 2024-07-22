@@ -2,7 +2,6 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardsWrapper } from "@/components/products/ProductCardsWrapper";
 import prisma from "@/lib/db";
 import { Product } from "@prisma/client";
-import { read } from "fs";
 import { notFound } from "next/navigation";
 
 export default async function Page({
