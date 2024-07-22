@@ -9,13 +9,17 @@ datasource db {
 
 // Users
 model User {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role      String   @default("USER")
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  role        String   @default("USER")
+  // Favorited, reviewed, basketed
+  userReviews Review[]
+
+  @@index([email])
 }
 
 // Products
@@ -26,9 +30,28 @@ model Product {
   productName        String      @unique @default(uuid())
   description        String      @default("")
   imageUrl           String      @default("/placeholder.svg")
+  thumbnail_1        String      @default("/placeholder.svg")
+  thumbnail_2        String      @default("/placeholder.svg")
+  thumbnail_3        String      @default("/placeholder.svg")
+  productReviews     Review[]
   price              Int
-  categories         SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  subCategory        SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
   featured           Boolean     @default(false)
+
+  @@index([productName])
+}
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  productId Int
+  stars     Int
+  comment   String  @default("")
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId])
+  @@index([productId])
 }
 
 model SubCategory {
@@ -38,6 +61,8 @@ model SubCategory {
   subCategoryName        String    @unique @default(uuid())
   category               Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   products               Product[]
+
+  @@index([subCategoryName])
 }
 
 model Category {
@@ -45,6 +70,8 @@ model Category {
   categoryDisplayName String        @default("")
   categoryName        String        @unique @default(uuid())
   subCategories       SubCategory[]
+
+  @@index([categoryName])
 }
 
 model NewsletterSubscriber {
@@ -53,4 +80,6 @@ model NewsletterSubscriber {
   subscribed Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([email])
 }

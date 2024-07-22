@@ -6,7 +6,6 @@ import { defaultSession } from "@/lib/session";
 // read session
 export async function GET() {
     const session = await getIronSession<SessionData>(cookies(), sessionOptions);
-    console.log("SESSION: ", session);
     return Response.json(session);
 }
 

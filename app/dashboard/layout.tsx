@@ -1,13 +1,6 @@
 import { Sidebar } from "@/components/ui/sideBar";
-import { SessionData, sessionOptions } from "@/lib/types";
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-async function getSession() {
-    const session = await getIronSession<SessionData>(cookies(), sessionOptions);
-    return session;
-}
+import { getSession } from "@/lib/session-server";
 
 export default async function DashboardLayout({
     children,

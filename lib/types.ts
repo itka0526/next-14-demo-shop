@@ -1,9 +1,9 @@
 import { SessionOptions } from "iron-session";
 import { typeToFlattenedError, z, ZodType } from "zod";
-import { NewsletterSubscriber, User } from "@prisma/client";
+import { NewsletterSubscriber, Review, User } from "@prisma/client";
 
 export const UserSchema = z.object({
-    id: z.string().cuid(),
+    id: z.number(),
     name: z.string().min(4, { message: "Нэр хэтэрхий богино байна" }),
     email: z.string().email({ message: "Буруу и-мэйл" }),
     password: z.string().min(6, { message: "Нууц үг хэтэрхий богино байна" }),
@@ -19,6 +19,14 @@ export const NewsletterSubscriberSchema = z.object({
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
 }) satisfies ZodType<NewsletterSubscriber>;
+
+export const ReviewProductSchema = z.object({
+    id: z.number(),
+    userId: z.coerce.number(),
+    productId: z.coerce.number(),
+    stars: z.coerce.number().min(0, { message: "0-оос бага дүн байх боломжгүй." }).max(5, { message: "5-аас их дүн байх боломжгүй." }),
+    comment: z.string().min(5, { message: "Та сэтгэгдлээ 5-аас илүү их тэмдэгтээр илэрхийлнэ үү." }),
+}) satisfies ZodType<Review>;
 
 export const RegisterUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true })
     .extend({
@@ -38,21 +46,20 @@ export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, upda
 
 export const SubscribeToNewsLetterSchema = NewsletterSubscriberSchema.omit({ id: true, createdAt: true, updatedAt: true, subscribed: true });
 
+export const RateProductSchema = ReviewProductSchema.omit({ id: true });
+
 export type FormState = {
     errors?: typeToFlattenedError<
-        z.infer<typeof RegisterUserSchema> | z.infer<typeof LoginUserSchema> | z.infer<typeof SubscribeToNewsLetterSchema>
+        | z.infer<typeof RegisterUserSchema>
+        | z.infer<typeof LoginUserSchema>
+        | z.infer<typeof SubscribeToNewsLetterSchema>
+        | z.infer<typeof RateProductSchema>
     >["fieldErrors"];
     message?: string | null;
 };
 
-export type SessionPayload = {
-    userId: string | number;
-    userRole: string;
-    expiresAt: Date;
-};
-
 export interface SessionData {
-    userId: string | null;
+    userId: number | null;
     userRole: string;
 }
 

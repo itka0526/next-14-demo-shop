@@ -6,17 +6,22 @@ import { Input } from "../ui/input";
 import { subscribeToNewsletter } from "@/lib/actions";
 import { FormState } from "@/lib/types";
 import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 
 export function Newsletter() {
     const initialState: FormState = { message: null, errors: {} };
     const [formState, formAction, isPending] = useFormState(subscribeToNewsletter, initialState);
-    if (formState.message) {
-        if (formState.errors && Object.keys(formState.errors).length > 0) {
-            toast.error(formState.message);
-        } else {
-            toast.success(formState.message);
+
+    useEffect(() => {
+        if (formState.message) {
+            if (formState.errors && Object.keys(formState.errors).length > 0) {
+                toast.error(formState.message);
+            } else {
+                toast.success(formState.message);
+            }
         }
-    }
+    }, [formState.errors, formState.message]);
+
     return (
         <section className="w-full py-12 md:py-24 lg:py-32">
             <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">

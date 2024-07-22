@@ -2,9 +2,12 @@
 
 import { redirect } from "next/navigation";
 import prisma from "./db";
-import { FormState, LoginUserSchema, RegisterUserSchema, SubscribeToNewsLetterSchema, UserSchema } from "./types";
+import { FormState, LoginUserSchema, RateProductSchema, RegisterUserSchema, SubscribeToNewsLetterSchema, UserSchema } from "./types";
 import { createSession } from "./auth";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError, raw } from "@prisma/client/runtime/library";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { getSession } from "./session-server";
 
 export async function registerUser(prevState: FormState, formData: FormData): Promise<FormState> {
     const rawFormData = Object.fromEntries(formData.entries());
@@ -140,4 +143,43 @@ export async function subscribeToNewsletter(prevState: FormState, formData: Form
         };
     }
     return prevState;
+}
+
+export async function rateProduct(prevState: FormState | undefined, formData: FormData) {
+    // console.log(await getSession());
+    const rawFormData = Object.fromEntries(formData.entries());
+    console.log(rawFormData);
+    const validatedFields = RateProductSchema.safeParse(rawFormData);
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Сэтгэгдлээ үлдэхийн тулд заавал бүх талбаруудийг бөглөнө үү.",
+        };
+    }
+    let data: { product: { productName: string } };
+    try {
+        data = await prisma.review.create({ data: validatedFields.data, select: { product: { select: { productName: true } } } });
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            switch (error.code) {
+                // https://www.prisma.io/docs/orm/reference/error-reference
+                case "P2002":
+                    return {
+                        errors: {},
+                        message: "Та аль хэдийн сэтгэгдлээ үлдээсэн байна.",
+                    };
+                default:
+                    return {
+                        errors: {},
+                        message: "Өгөгдлийн санд одоогоор бүртгэх боломжгүй байна.",
+                    };
+            }
+        }
+        console.error(error);
+        return {
+            errors: {},
+            message: "Сервер дээр алдаа гарлаа.",
+        };
+    }
+    revalidatePath(`/details/${data.product.productName}`);
 }
