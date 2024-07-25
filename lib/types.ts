@@ -71,7 +71,7 @@ export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, upda
 
 export const SubscribeToNewsLetterSchema = NewsletterSubscriberSchema.omit({ id: true, createdAt: true, updatedAt: true, subscribed: true });
 
-export const RateProductSchema = ReviewProductSchema.omit({ id: true });
+export const RateProductSchema = ReviewProductSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
 export const AddToCartItemSchema = UserBasketedItemSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
