@@ -1,15 +1,19 @@
 "use client";
 
-import useSession from "@/lib/session";
+import { useSession } from "@/lib/swr-client";
 import Link from "next/link";
+import { CartModal } from "./cart-modal";
 
 export function NavbarButtons() {
     const { session, logout, isLoading } = useSession();
     if (!isLoading && session?.userId) {
         return (
-            <li>
-                <button onClick={() => logout()}>Гарах</button>
-            </li>
+            <>
+                <CartModal />
+                <li>
+                    <button onClick={async () => await logout()}>Гарах</button>
+                </li>
+            </>
         );
     } else {
         return (

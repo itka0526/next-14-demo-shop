@@ -5,6 +5,13 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const memo: Record<string, number> = {};
+        // Users
+        await prisma.user.createMany({
+            data: [
+                { email: "admin@admin.com", name: "admin", password: "123123", role: "ADMIN" },
+                { email: "user@user.com", name: "user", password: "123123", role: "USER" },
+            ],
+        });
         // Categories
         await prisma.category.createMany({
             data: data.categories,

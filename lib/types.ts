@@ -1,6 +1,6 @@
 import { SessionOptions } from "iron-session";
 import { typeToFlattenedError, z, ZodType } from "zod";
-import { NewsletterSubscriber, Review, User } from "@prisma/client";
+import { BasketedItem, NewsletterSubscriber, Product, Review, User } from "@prisma/client";
 
 export const UserSchema = z.object({
     id: z.number(),
@@ -10,7 +10,22 @@ export const UserSchema = z.object({
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
     role: z.string(),
+    avatarImage: z.string(),
 }) satisfies ZodType<User>;
+
+export const ProductSchema = z.object({
+    id: z.number(),
+    subCategoryId: z.number(),
+    productDisplayName: z.string(),
+    productName: z.string(),
+    description: z.string(),
+    imageUrl: z.string(),
+    thumbnail_1: z.string(),
+    thumbnail_2: z.string(),
+    thumbnail_3: z.string(),
+    price: z.number(),
+    featured: z.boolean(),
+}) satisfies ZodType<Product>;
 
 export const NewsletterSubscriberSchema = z.object({
     id: z.number(),
@@ -26,9 +41,19 @@ export const ReviewProductSchema = z.object({
     productId: z.coerce.number(),
     stars: z.coerce.number().min(0, { message: "0-оос бага дүн байх боломжгүй." }).max(5, { message: "5-аас их дүн байх боломжгүй." }),
     comment: z.string().min(5, { message: "Та сэтгэгдлээ 5-аас илүү их тэмдэгтээр илэрхийлнэ үү." }),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
 }) satisfies ZodType<Review>;
 
-export const RegisterUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true })
+export const UserBasketedItemSchema = z.object({
+    id: z.number(),
+    userId: z.number(),
+    productId: z.number(),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
+}) satisfies ZodType<BasketedItem>;
+
+export const RegisterUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true, avatarImage: true })
     .extend({
         confirmPassword: z.string().min(6, { message: "Нууц үг хэтэрхий богино байна" }),
     })
@@ -42,11 +67,15 @@ export const RegisterUserSchema = UserSchema.omit({ id: true, createdAt: true, u
         }
     });
 
-export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true, name: true });
+export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, updatedAt: true, role: true, name: true, avatarImage: true });
 
 export const SubscribeToNewsLetterSchema = NewsletterSubscriberSchema.omit({ id: true, createdAt: true, updatedAt: true, subscribed: true });
 
 export const RateProductSchema = ReviewProductSchema.omit({ id: true });
+
+export const AddToCartItemSchema = UserBasketedItemSchema.omit({ id: true, createdAt: true, updatedAt: true });
+
+export const DeleteFromCartSchema = UserBasketedItemSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
 export type FormState = {
     errors?: typeToFlattenedError<
@@ -69,4 +98,16 @@ export const sessionOptions: SessionOptions = {
     cookieOptions: {
         secure: true,
     },
+};
+
+export type ApiResponse =
+    | { message: string; status: true; result: BasketedItem[]; type: "basketedItems" }
+    | { message: string; status: true; result: Product | null; type: "product" }
+    | { message: string; status: false };
+
+export type UseCartItemReturnType = {
+    cartItem: Product | null;
+    isLoading: boolean;
+    isDeleting: boolean;
+    deleteCartItem: ({ productId }: { productId: number }) => Promise<void>;
 };

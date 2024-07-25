@@ -89,8 +89,11 @@ export function Stars({ averageScore, count, user, productId }: StarsProps) {
 }
 
 export function Star({ score, userEntered, onClick }: { readonly score: number; readonly userEntered: boolean; readonly onClick: () => void }) {
-    const className = cn("transition-transform w-7 h-7", userEntered ? "fill-secondary scale-105" : "fill-primary ");
-    if (score >= 1) return <StarIcon className={className} onClick={onClick} />;
-    else if (score >= 0.5) return <StarHalfIcon className={className} onClick={onClick} />;
+    const defaultStyles = "transition-all w-7 h-7",
+        ueStyles = "fill-destructive scale-105",
+        udeStyles = "fill-primary-content";
+    const starStyles = cn(defaultStyles, userEntered ? ueStyles : udeStyles);
+    if (score >= 1) return <StarIcon className={starStyles} onClick={onClick} />;
+    else if (score >= 0.5) return <StarHalfIcon className={starStyles} onClick={onClick} />;
     else return <StarIcon className={cn("w-7 h-7 fill-none", userEntered ? "scale-105" : "")} onClick={onClick} />;
 }

@@ -68,6 +68,9 @@ const config: Config = {
             },
         },
     },
+    daisyui: {
+        themes: ["wireframe"],
+    },
     plugins: [require("tailwindcss-animate"), require("daisyui")],
 };
 export default config;

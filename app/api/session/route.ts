@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { getIronSession } from "iron-session";
 import { SessionData, sessionOptions } from "@/lib/types";
-import { defaultSession } from "@/lib/session";
+import { defaultSession } from "@/lib/swr-client";
 
 // read session
 export async function GET() {

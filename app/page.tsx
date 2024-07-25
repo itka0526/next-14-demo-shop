@@ -1,13 +1,15 @@
+import { PopularCategories } from "@/components/category/popularCategory/popular-categories";
 import { Newsletter } from "@/components/forms/newsletter-form";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardsWrapper } from "@/components/products/ProductCardsWrapper";
+import { PopularCategoriesSkeleton } from "@/components/skeletons/popular-categories-skeleton";
 import prisma from "@/lib/db";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function Home() {
     const featuredProducts = await prisma.product.findMany({ where: { featured: true } });
-    const popularCategories = await prisma.category.findMany({ select: { id: true, categoryName: true, categoryDisplayName: true } });
     return (
         <div className="flex flex-col">
             <section className="w-full py-12 md:py-24 lg:py-32 bg-muted mt-4">
@@ -23,11 +25,11 @@ export default async function Home() {
                         </div>
                         <div>
                             <Link
-                                href="/products"
+                                href="#special-products"
                                 className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                                 prefetch={false}
                             >
-                                Одоо худалдаж авах
+                                Онцлох
                             </Link>
                         </div>
                     </div>
@@ -40,7 +42,7 @@ export default async function Home() {
                     />
                 </div>
             </section>
-            <section className="w-full py-12 md:py-24 lg:py-32">
+            <section className="w-full py-12 md:py-24 lg:py-32" id="special-products">
                 <div className="container space-y-12 px-4 md:px-6">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
@@ -66,16 +68,9 @@ export default async function Home() {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {popularCategories.map(({ id, categoryDisplayName, categoryName }) => (
-                            <Link
-                                key={`${categoryName}-${id}`}
-                                href={`/products/${categoryName}`}
-                                className="group flex flex-col items-center justify-center space-y-2 rounded-lg bg-background p-4 transition-all hover:bg-accent hover:text-accent-foreground"
-                                prefetch={false}
-                            >
-                                <span className="text-sm font-medium">{categoryDisplayName}</span>
-                            </Link>
-                        ))}
+                        <Suspense fallback={<PopularCategoriesSkeleton />}>
+                            <PopularCategories />
+                        </Suspense>
                     </div>
                 </div>
             </section>

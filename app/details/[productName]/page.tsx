@@ -1,13 +1,34 @@
+import { AddToCart } from "@/components/details/add-to-cart";
+import { ReviewComments } from "@/components/details/review-comments";
 import { Button } from "@/components/ui/button";
 import { Ratings } from "@/components/ui/ratings";
-import { Stars } from "@/components/ui/stars";
 import prisma from "@/lib/db";
-import { cn } from "@/lib/utils";
-import { StarIcon } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-export default async function Page({ params: { productName } }: { readonly params: { readonly productName: string } }) {
+type Props = { readonly params: { readonly productName: string } };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const product = await prisma.product.findUnique({
+        where: { productName: params.productName },
+        select: { productDisplayName: true, description: true },
+    });
+    if (!product) {
+        return {
+            title: "",
+            description: "",
+        };
+    } else {
+        return {
+            title: product.productDisplayName.length > 24 ? product.productDisplayName.slice(0, 21) + "..." : product.productDisplayName,
+            description: product?.description ?? "",
+        };
+    }
+}
+
+export default async function Page({ params: { productName } }: Props) {
     const product = await prisma.product.findUnique({
         where: { productName },
         select: {
@@ -29,9 +50,8 @@ export default async function Page({ params: { productName } }: { readonly param
         },
     });
 
-    // TODO: Implement product skeleton.
     if (!product) {
-        return <></>;
+        return notFound();
     }
 
     const {
@@ -85,15 +105,12 @@ export default async function Page({ params: { productName } }: { readonly param
                 </div>
                 <Ratings productId={productId} />
                 <div className="text-4xl font-bold">{price.toLocaleString()}₮</div>
-                <div>
-                    <Button size="lg" className="w-full">
-                        Сагсанд нэмэх
-                    </Button>
-                </div>
+                <AddToCart productId={productId} />
                 <div className="grid gap-4 text-sm leading-loose text-muted-foreground">
                     <p>{description}</p>
                 </div>
             </div>
+            <ReviewComments productId={productId} />
         </div>
     );
 }

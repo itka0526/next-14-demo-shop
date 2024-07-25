@@ -15,49 +15,69 @@ datasource db {
 
 // Users
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  email       String   @unique
-  password    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  role        String   @default("USER")
+  id                Int            @id @default(autoincrement())
+  name              String         @unique
+  email             String         @unique
+  password          String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  role              String         @default("USER")
   // Favorited, reviewed, basketed
-  userReviews Review[]
+  userReviews       Review[]
+  userBasketedItems BasketedItem[]
+  // Profile
+  avatarImage       String         @default("/placeholder-user.jpg")
 
   @@index([email])
 }
 
-// Products
-model Product {
-  id                 Int         @id @default(autoincrement())
-  subCategoryId      Int
-  productDisplayName String      @default("")
-  productName        String      @unique @default(uuid())
-  description        String      @default("")
-  imageUrl           String      @default("/placeholder.svg")
-  thumbnail_1        String      @default("/placeholder.svg")
-  thumbnail_2        String      @default("/placeholder.svg")
-  thumbnail_3        String      @default("/placeholder.svg")
-  productReviews     Review[]
-  price              Int
-  subCategory        SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
-  featured           Boolean     @default(false)
-
-  @@index([productName])
-}
-
 model Review {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   productId Int
   stars     Int
-  comment   String  @default("")
-  product   Product @relation(fields: [productId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+  comment   String   @default("")
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, productId])
   @@index([productId])
+}
+
+model BasketedItem {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  productId Int
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+// Products
+model Product {
+  id                   Int            @id @default(autoincrement())
+  subCategoryId        Int
+  productDisplayName   String         @default("")
+  productName          String         @unique @default(uuid())
+  description          String         @default("")
+  imageUrl             String         @default("/placeholder.svg")
+  thumbnail_1          String         @default("/placeholder.svg")
+  thumbnail_2          String         @default("/placeholder.svg")
+  thumbnail_3          String         @default("/placeholder.svg")
+  productReviews       Review[]
+  productBasketedUsers BasketedItem[]
+  price                Int
+  subCategory          SubCategory    @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  featured             Boolean        @default(false)
+
+  @@index([productName])
 }
 
 model SubCategory {

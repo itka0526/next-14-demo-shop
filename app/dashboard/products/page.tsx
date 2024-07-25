@@ -1,9 +1,9 @@
 import prisma from "@/lib/db";
-import { UserSchema } from "@/lib/types";
+import { ProductSchema } from "@/lib/types";
 
 export default async function Page() {
-    const users = await prisma.user.findMany();
-    const fields = Object.keys(UserSchema._def.shape());
+    const products = await prisma.product.findMany();
+    const fields = Object.keys(ProductSchema._def.shape());
     return (
         <div className="overflow-x-scroll">
             <table className="table">
@@ -15,8 +15,8 @@ export default async function Page() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((info, idx) => (
-                        <tr key={`user-${info.id}`}>
+                    {products.map((info, idx) => (
+                        <tr key={`product-${info.id}`}>
                             {Object.values(info).map((value, idx) => (
                                 <td key={`${value}${idx}`}>{value.toLocaleString().toString()}</td>
                             ))}

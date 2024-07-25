@@ -2,9 +2,19 @@ import { CategorySidebar } from "@/components/category/category-sidebar";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardsWrapper } from "@/components/products/ProductCardsWrapper";
 import prisma from "@/lib/db";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export default async function Page({ params: { categoryName } }: { params: { categoryName: string } }) {
+type Props = { readonly params: { readonly categoryName: string } };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const category = await prisma.category.findUnique({ where: { categoryName: params.categoryName }, select: { categoryDisplayName: true } });
+    return {
+        title: category?.categoryDisplayName ?? "Алдаа",
+    };
+}
+
+export default async function Page({ params: { categoryName } }: Props) {
     const data = await prisma.category.findUnique({
         where: { categoryName },
         select: { subCategories: { select: { products: true } } },
