@@ -1,37 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Эхлүүлэх
 
-## Getting Started
-
-First, run the development server:
+Эхлээд хөгжүүлэлтийн серверийг ажиллуулахын тулд:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Үр дүнг үзэхийн тулд [http://localhost:3000](http://localhost:3000) хаягийг нээнэ үү.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Дэлгэрэнгүй мэдээлэл
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Би локал хөгжүүлэлтэд SQLite ашиглаж, дараа нь Vercel дээр байрлуулахдаа PostgreSQL руу шилжсэн.
 
-## Learn More
+Хэрэв та локал хөгжүүлэлтэд SQLite ашиглахыг хүсвэл schema.prisma файлыг нээнэ үү. SQLite datasource провайдерийн мөрийг идэвхжүүлж, PostgreSQL-ийн мөрүүдийг комментлэнэ уу. Мөн prisma/migrations хавтсыг устгана уу. Дараа нь дараах командыг ажиллуулна уу:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx prisma migrate dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Хэрэв үүнийг production орчинд ашиглахыг хүсвэл дараах командыг ажиллуулна уу:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+npx prisma migrate deploy
+```
 
-## Deploy on Vercel
+## Төслийн ажилж байх үед тулгарсан зүйлүүд:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# next-14-demo-shop
+Би Server Actions хэрхэн ашиглахыг сурсан боловч TypeScript-ийн type-уудтай байлдсаар байгаад таарсан. Гэсэн хэдий ч, би янз бүрийн example/tutorial харж байгаад логин бүртгэлийг хуудсуудаа дуусгасан. Мөн zod-ийн талаар суралцаж, формын талбар болон ирж буй өгөгдлийг баталгаажуулахад хэрхэн хялбар болгодгийг олж мэдсэн. CSS-д Tailwind + Daisy UI ашигласан. API-ийн хүсэлт, хариуны загвар нь Node.js-ээс эрс өөр байсан нь надад хүндрэл учруулж, үргэлж дахин шалгах хэрэгтэй болсон. Next.js 14 өргөнөөр ашиглагдаагүй байсан тул Stack Overflow гэх мэт газруудад олон хариулт олоход төвөгтөй байсан, тиймээс ихэвчлэн docs руу хандах шаардлагатай болсон. Мөн Next-auth-ийг тохируулах, ажиллуулахад хэцүү байсан тул би iron-session ашиглахаар шийдсэн. Энэ нь серверийн талын баталгаажуулалттай session сан юм. Next-auth нь намайг OAuth болон бусад надад хэрэгцээгүй зүйлс ашиглахыг шаардсан бөгөөд NextJS 14-ийг бүхэлд дэмжээгүй байсан тул үргэлж pages router-д л зориулж жишээ эдр байсан.
