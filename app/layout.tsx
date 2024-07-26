@@ -11,6 +11,7 @@ import logoIcon from "@/public/logo.svg";
 import { Suspense } from "react";
 import { PopularCategoriesSkeleton } from "@/components/skeletons/popular-categories-skeleton";
 import { PopularCategories } from "@/components/category/popularCategory/popular-categories";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,8 +30,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>
+            <body id="body" className={inter.className}>
                 <Toaster position="bottom-right" />
+                <NextTopLoader showSpinner={false} color="#202020" shadow="0 0 10px #2299DD,0 0 5px #2299DD" />
                 <div className="drawer">
                     <CollapsibleSidebar />
                     <div className="drawer-content flex flex-col">
