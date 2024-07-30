@@ -17,8 +17,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: {
-        template: "%s | 𝔻𝔼𝕄𝕆",
-        default: "Нүүр | 𝔻𝔼𝕄𝕆",
+        template: "%s | 𝕆𝕍𝔾𝕆",
+        default: "Нүүр | 𝕆𝕍𝔾𝕆",
     },
     description: "Энэ бол NextJS 14 дээр бүтээгдсэн демо цахим худалдааны вэбсайт юм.",
 };
