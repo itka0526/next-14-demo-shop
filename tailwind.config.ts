@@ -73,4 +73,10 @@ const config: Config = {
     },
     plugins: [require("tailwindcss-animate"), require("daisyui")],
 };
-export default config;
+
+import { withUt } from "uploadthing/tw";
+
+export default withUt({
+    ...config,
+});
+// export default config;
