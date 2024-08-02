@@ -1,6 +1,5 @@
 import { AddToCart } from "@/components/details/add-to-cart";
 import { ReviewComments } from "@/components/details/review-comments";
-import { Button } from "@/components/ui/button";
 import { Ratings } from "@/components/ui/ratings";
 import prisma from "@/lib/db";
 import { Metadata } from "next";
@@ -40,12 +39,9 @@ export default async function Page({ params: { productName } }: Props) {
                 },
             },
             id: true,
-            thumbnail_1: true,
-            thumbnail_2: true,
-            thumbnail_3: true,
             productDisplayName: true,
             description: true,
-            imageUrl: true,
+            images: true,
             price: true,
         },
     });
@@ -61,11 +57,8 @@ export default async function Page({ params: { productName } }: Props) {
             category: { categoryName, categoryDisplayName },
         },
         id: productId,
-        thumbnail_1,
-        thumbnail_2,
-        thumbnail_3,
+        images,
         productDisplayName,
-        imageUrl,
         description,
         price,
     } = product;
@@ -75,17 +68,17 @@ export default async function Page({ params: { productName } }: Props) {
             <div className="grid gap-6">
                 <div className="grid grid-cols-5 gap-4">
                     <div className="col-span-5 md:col-span-4 rounded-lg overflow-hidden justify-self-start self-start">
-                        <Image src={imageUrl} alt={productName} width={800} height={800} className="w-full h-full object-cover" />
+                        <Image src={"/placeholder.svg"} alt={productName} width={800} height={800} className="w-full h-full object-cover" />
                     </div>
                     <div className="col-span-5 md:col-span-1 grid gap-4 justify-self-start self-start ">
                         <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={thumbnail_1} alt="Thumbnail 1" width={100} height={100} className="w-full h-full object-cover" />
+                            <Image src={"/placeholder.svg"} alt="Thumbnail 1" width={100} height={100} className="w-full h-full object-cover" />
                         </button>
                         <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={thumbnail_2} alt="Thumbnail 2" width={100} height={100} className="w-full h-full object-cover" />
+                            <Image src={"/placeholder.svg"} alt="Thumbnail 2" width={100} height={100} className="w-full h-full object-cover" />
                         </button>
                         <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={thumbnail_3} alt="Thumbnail 3" width={100} height={100} className="w-full h-full object-cover" />
+                            <Image src={"/placeholder.svg"} alt="Thumbnail 3" width={100} height={100} className="w-full h-full object-cover" />
                         </button>
                     </div>
                 </div>
