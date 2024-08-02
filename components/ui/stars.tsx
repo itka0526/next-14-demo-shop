@@ -1,7 +1,6 @@
 "use client";
 
 import { rateProduct } from "@/lib/actions";
-import { FormState } from "@/lib/types";
 import { User } from "@prisma/client";
 import { StarHalfIcon, StarIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { ProductSchema } from "@/lib/types";
+import Link from "next/link";
 
 export default async function Page() {
     const products = await prisma.product.findMany();
@@ -15,11 +16,14 @@ export default async function Page() {
                     </tr>
                 </thead>
                 <tbody>
-                    {products.map((info, idx) => (
-                        <tr key={`product-${info.id}`}>
-                            {Object.values(info).map((value, idx) => (
+                    {products.map((product, idx) => (
+                        <tr key={`product-${product.id}`}>
+                            {Object.values(product).map((value, idx) => (
                                 <td key={`${value}${idx}`}>{value.toLocaleString().toString()}</td>
                             ))}
+                            <td>
+                                <Link href={`/dashboard/products/edit/${product.productName}`}>Edit</Link>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

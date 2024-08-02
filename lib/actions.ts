@@ -2,7 +2,15 @@
 
 import { redirect } from "next/navigation";
 import prisma from "./db";
-import { FormState, LoginUserSchema, RateProductSchema, RegisterUserSchema, SubscribeToNewsLetterSchema, UserSchema } from "./types";
+import {
+    CreateProductSchema,
+    FormState,
+    LoginUserSchema,
+    RateProductSchema,
+    RegisterUserSchema,
+    SubscribeToNewsLetterSchema,
+    UserSchema,
+} from "./types";
 import { createSession } from "./auth";
 import { PrismaClientKnownRequestError, raw } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
@@ -182,4 +190,73 @@ export async function rateProduct(prevState: FormState | undefined, formData: Fo
         };
     }
     revalidatePath(`/details/${data.product.productName}`);
+}
+
+// : Promise<FormState>
+export async function createNewProduct(prevState: FormState | undefined, formData: FormData) {
+    const session = await getSession();
+    if (!session.userId) {
+        redirect("/login");
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { id: session.userId } });
+        if (!user) {
+            return {
+                errors: {},
+                message: "Тийм хэрэглэгч байхгүй байна",
+            };
+        }
+    } catch (error) {
+        return {
+            errors: {},
+            message: "Өгөгдлийн сан дээр алдаа гарлаа",
+        };
+    }
+    const validatedFields = CreateProductSchema.safeParse(Object.fromEntries(formData.entries()));
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Дутуу талбаруудтай байна",
+        };
+    }
+    try {
+        const { description, featured, images, price, productDisplayName, productName, subCategoryId } = validatedFields.data;
+        await prisma.product.create({
+            data: {
+                subCategoryId,
+                productDisplayName,
+                productName,
+                description,
+                price,
+                featured,
+                images: { connect: images.map((id) => ({ id })) },
+            },
+        });
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            switch (error.code) {
+                // https://www.prisma.io/docs/orm/reference/error-reference
+                case "P2002":
+                    return {
+                        errors: {},
+                        message: "Аль хэдийн тийм бараа бүртгэлтэй байна.",
+                    };
+                default:
+                    return {
+                        errors: {},
+                        message: "Өгөгдлийн санд одоогоор бүртгэх боломжгүй байна.",
+                    };
+            }
+        }
+        console.error(error);
+        return {
+            errors: {},
+            message: "Сервер дээр алдаа гарлаа.",
+        };
+    }
+    return {
+        errors: {},
+        message: "Амжилттай.",
+    };
 }

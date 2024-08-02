@@ -1,5 +1,5 @@
 import { SessionOptions } from "iron-session";
-import { typeToFlattenedError, z, ZodType } from "zod";
+import { typeToFlattenedError, z, ZodNumber, ZodType } from "zod";
 import { BasketedItem, NewsletterSubscriber, Product, Review, User } from "@prisma/client";
 
 export const UserSchema = z.object({
@@ -19,11 +19,7 @@ export const ProductSchema = z.object({
     productDisplayName: z.string(),
     productName: z.string(),
     description: z.string(),
-    imageUrl: z.string(),
-    thumbnail_1: z.string(),
-    thumbnail_2: z.string(),
-    thumbnail_3: z.string(),
-    price: z.number(),
+    price: z.coerce.number(),
     featured: z.boolean(),
 }) satisfies ZodType<Product>;
 
@@ -71,6 +67,22 @@ export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, upda
 
 export const SubscribeToNewsLetterSchema = NewsletterSubscriberSchema.omit({ id: true, createdAt: true, updatedAt: true, subscribed: true });
 
+export const CreateProductSchema = ProductSchema.omit({ id: true, subCategoryId: true, featured: true }).extend({
+    images: z.preprocess((val) => {
+        if (typeof val === "string") {
+            return val.split(",").map((x) => Number(x));
+        }
+        return val;
+    }, z.array(z.number())),
+    subCategoryId: z.preprocess((val) => {
+        if (typeof val === "string" && !isNaN(Number(val))) {
+            return Number(val);
+        }
+        return val;
+    }, z.number()),
+    featured: z.preprocess((val) => val === "on", z.boolean()),
+});
+
 export const RateProductSchema = ReviewProductSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
 export const AddToCartItemSchema = UserBasketedItemSchema.omit({ id: true, createdAt: true, updatedAt: true });
@@ -83,6 +95,7 @@ export type FormState = {
         | z.infer<typeof LoginUserSchema>
         | z.infer<typeof SubscribeToNewsLetterSchema>
         | z.infer<typeof RateProductSchema>
+        | z.infer<typeof CreateProductSchema>
     >["fieldErrors"];
     message?: string | null;
 };
@@ -111,3 +124,15 @@ export type UseCartItemReturnType = {
     isDeleting: boolean;
     deleteCartItem: ({ productId }: { productId: number }) => Promise<void>;
 };
+
+export type ImageUploadResponse =
+    | {
+          uploadedBy: User["name"];
+          success: true;
+          imageId: number;
+      }
+    | {
+          uploadedBy: User["name"];
+          success: false;
+          message: string;
+      };

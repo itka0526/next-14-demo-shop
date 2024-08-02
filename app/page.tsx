@@ -1,15 +1,16 @@
 import { PopularCategories } from "@/components/category/popularCategory/popular-categories";
 import { Newsletter } from "@/components/forms/newsletter-form";
+import { FeaturedProducts } from "@/components/home/featuredProducts";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardsWrapper } from "@/components/products/ProductCardsWrapper";
 import { PopularCategoriesSkeleton } from "@/components/skeletons/popular-categories-skeleton";
+import { ProductCardSkeleton } from "@/components/skeletons/product-card";
 import prisma from "@/lib/db";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function Home() {
-    const featuredProducts = await prisma.product.findMany({ where: { featured: true } });
     return (
         <div className="flex flex-col">
             <section className="w-full py-12 md:py-24 lg:py-32 bg-muted mt-4">
@@ -49,12 +50,17 @@ export default async function Home() {
                             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Онцлох бүтээгдэхүүнүүд</h2>
                         </div>
                     </div>
-                    <ProductCardsWrapper>
-                        {/* TODO: Implement skeleton for featured products if the data is unavailable.*/}
-                        {featuredProducts.map((product) => (
-                            <ProductCard key={`product-${product.id}`} {...product} />
-                        ))}
-                    </ProductCardsWrapper>
+                    <Suspense
+                        fallback={
+                            <ProductCardsWrapper>
+                                <ProductCardSkeleton />
+                                <ProductCardSkeleton />
+                                <ProductCardSkeleton />
+                            </ProductCardsWrapper>
+                        }
+                    >
+                        <FeaturedProducts />
+                    </Suspense>
                 </div>
             </section>
             <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">

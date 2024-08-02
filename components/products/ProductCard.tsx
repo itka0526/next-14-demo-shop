@@ -1,19 +1,28 @@
+"use server";
+
 import Image from "next/image";
 import { Product } from "@prisma/client";
 import Link from "next/link";
+import prisma from "@/lib/db";
 
-export function ProductCard({ productName, productDisplayName, description, imageUrl, price }: Product) {
+export async function ProductCard({ id, productName, productDisplayName, description, featured, price }: Product) {
+    const res: { url: string }[] = await prisma.$queryRaw`
+        SELECT url FROM "Image"
+        WHERE "productId" = ${id}
+        ORDER BY "id" ASC
+        LIMIT 1;
+    `;
     return (
         <div className="relative overflow-hidden rounded-lg group">
-            {/** TODO: Implement details page. */}
             <Link href={`/details/${productName}`} className="absolute inset-0 z-0" prefetch={false}>
-                <span className="sr-only">View {}</span>
+                <span className="sr-only">View</span>
             </Link>
             <Image
-                src={imageUrl}
+                src={res.length ? res[0].url : "/placeholder.svg"}
                 alt={productDisplayName}
                 width={400}
                 height={300}
+                quality={50}
                 className="object-cover w-full h-60 group-hover:opacity-50 transition-opacity"
             />
             <div className="p-4 bg-background">

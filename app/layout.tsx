@@ -12,6 +12,9 @@ import { Suspense } from "react";
 import { PopularCategoriesSkeleton } from "@/components/skeletons/popular-categories-skeleton";
 import { PopularCategories } from "@/components/category/popularCategory/popular-categories";
 import NextTopLoader from "nextjs-toploader";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { ourFileRouter } from "./api/uploadthing/core";
+import { extractRouterConfig } from "uploadthing/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +34,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body id="body" className={inter.className}>
+                <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
                 <Toaster position="bottom-right" />
                 <NextTopLoader showSpinner={false} color="#202020" shadow="0 0 10px #2299DD,0 0 5px #2299DD" />
                 <div className="drawer">
@@ -63,7 +67,7 @@ export default function RootLayout({
                                         </svg>
                                         <span>Ангилал</span>
                                     </label>
-                                    <div className="flex gap-4 hidden md:block">
+                                    <div className="gap-4 hidden md:flex">
                                         <Suspense fallback={<PopularCategoriesSkeleton />}>
                                             <PopularCategories defaultStyles="px-4 py-2 rounded-lg" />
                                         </Suspense>
