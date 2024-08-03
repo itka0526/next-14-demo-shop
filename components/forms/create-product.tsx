@@ -38,6 +38,7 @@ export function CreateProduct({
             } else {
                 toast.success(formState.message);
                 formRef.current && formRef?.current.reset();
+                setImages([]);
             }
         }
     }, [formState?.message, formState?.errors]);

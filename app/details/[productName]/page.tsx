@@ -1,9 +1,9 @@
 import { AddToCart } from "@/components/details/add-to-cart";
+import { Images } from "@/components/details/images";
 import { ReviewComments } from "@/components/details/review-comments";
 import { Ratings } from "@/components/ui/ratings";
 import prisma from "@/lib/db";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -41,7 +41,7 @@ export default async function Page({ params: { productName } }: Props) {
             id: true,
             productDisplayName: true,
             description: true,
-            images: true,
+            images: { select: { id: true, name: true, url: true } },
             price: true,
         },
     });
@@ -66,22 +66,7 @@ export default async function Page({ params: { productName } }: Props) {
     return (
         <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto py-12 px-4 md:px-0">
             <div className="grid gap-6">
-                <div className="grid grid-cols-5 gap-4">
-                    <div className="col-span-5 md:col-span-4 rounded-lg overflow-hidden justify-self-start self-start">
-                        <Image src={"/placeholder.svg"} alt={productName} width={800} height={800} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="col-span-5 md:col-span-1 grid gap-4 justify-self-start self-start ">
-                        <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={"/placeholder.svg"} alt="Thumbnail 1" width={100} height={100} className="w-full h-full object-cover" />
-                        </button>
-                        <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={"/placeholder.svg"} alt="Thumbnail 2" width={100} height={100} className="w-full h-full object-cover" />
-                        </button>
-                        <button className="border rounded-lg overflow-hidden justify-self-start self-start">
-                            <Image src={"/placeholder.svg"} alt="Thumbnail 3" width={100} height={100} className="w-full h-full object-cover" />
-                        </button>
-                    </div>
-                </div>
+                <Images images={images} />
             </div>
             <div className="grid gap-6">
                 <div className="flex flex-col gap-4">

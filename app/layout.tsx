@@ -16,6 +16,8 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { extractRouterConfig } from "uploadthing/server";
 
+export const revalidate = 60;
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
