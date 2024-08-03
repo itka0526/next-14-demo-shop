@@ -37,22 +37,25 @@ export function Images({ images }: { images: ImagesProps }) {
         }
     };
     return (
-        <div className="grid grid-rows-5">
+        <div className="grid">
             <div
                 className="
-                    rounded-lg overflow-hidden row-span-4
+                    rounded-lg overflow-hidden
                     relative w-full mb-4
                     "
             >
-                <div>
+                <div className="w-full h-full">
                     <Image
                         priority
                         src={images[index].url}
                         alt={images[index].name}
-                        width={800}
                         height={800}
+                        width={800}
+                        layout="responsive"
                         className="w-full h-full object-cover"
                         quality={QUALITY.main}
+                        placeholder="blur"
+                        blurDataURL="/placeholder.svg"
                     />
                 </div>
                 <div className="left-0 top-0 absolute w-full h-full pointer-events-none flex justify-between items-center">
@@ -66,7 +69,7 @@ export function Images({ images }: { images: ImagesProps }) {
             </div>
             <div
                 className="
-                        row-span-1 justify-self-start self-start
+                        justify-self-start self-start
                         grid w-full h-full grid-flow-col auto-cols-[25%]
                         gap-4 overflow-auto no-scrollbar
                         "
