@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 
 type ImagesProps = Omit<ImageType, "size" | "type" | "key" | "productId">[];
-const QUALITY = 1;
+const QUALITY = { main: 100, thumbnail: 25 };
 
 export function Images({ images }: { images: ImagesProps }) {
     const [index, setIndex] = useState<number>(0);
@@ -41,19 +41,20 @@ export function Images({ images }: { images: ImagesProps }) {
             <div
                 className="
                     rounded-lg overflow-hidden row-span-4
-                    justify-self-start self-start mb-4
-                    relative
+                    relative w-full mb-4
                     "
             >
-                <Image
-                    priority
-                    src={images[index].url}
-                    alt={images[index].name}
-                    width={800}
-                    height={800}
-                    className="w-full h-full object-cover"
-                    quality={QUALITY}
-                />
+                <div>
+                    <Image
+                        priority
+                        src={images[index].url}
+                        alt={images[index].name}
+                        width={800}
+                        height={800}
+                        className="w-full h-full object-cover"
+                        quality={QUALITY.main}
+                    />
+                </div>
                 <div className="left-0 top-0 absolute w-full h-full pointer-events-none flex justify-between items-center">
                     <button onClick={() => updateIndex("left")}>
                         <ChevronLeftIcon width={48} height={48} className="pointer-events-auto" />
@@ -86,7 +87,7 @@ export function Images({ images }: { images: ImagesProps }) {
                             width={100}
                             height={100}
                             className="w-full h-full object-cover"
-                            quality={QUALITY}
+                            quality={QUALITY.thumbnail}
                             draggable={false}
                         />
                     </button>

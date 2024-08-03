@@ -28,7 +28,7 @@ export async function ProductCard({ id, productName, productDisplayName, descrip
             <div className="p-4 bg-background">
                 <h3 className="text-lg font-semibold">{productDisplayName}</h3>
                 <p className="text-sm text-muted-foreground">{description.slice(0, 50) + (description.length > 50 ? "..." : "")}</p>
-                <h4 className="text-base font-semibold">{price}₮</h4>
+                <h4 className="text-base font-semibold">{price.toLocaleString()}₮</h4>
             </div>
         </div>
     );
