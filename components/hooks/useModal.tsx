@@ -20,14 +20,16 @@ export function useModal() {
     );
     const Modal = ({ children }: React.PropsWithChildren) => (
         <>
-            {ref.current
-                ? createPortal(
-                      <dialog id="cart-modal" className={cn("modal", open ? "modal-open" : "")}>
-                          <div className="modal-box flex flex-col gap-4">{children}</div>
-                      </dialog>,
-                      ref.current
-                  )
-                : null}
+            {ref.current ? (
+                createPortal(
+                    <dialog id="cart-modal" className={cn("modal", open ? "modal-open" : "")}>
+                        <div className="modal-box flex flex-col gap-4">{children}</div>
+                    </dialog>,
+                    ref.current
+                )
+            ) : (
+                <></>
+            )}
         </>
     );
     return {

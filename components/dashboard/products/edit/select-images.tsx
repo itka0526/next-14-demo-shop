@@ -1,9 +1,10 @@
 import { UploadDropzone } from "@/components/uploadthing/utils";
-import { ApiResponse, ImageUploadResponse } from "@/lib/types";
+import { fetchJson } from "@/lib/swr-client";
+import { ApiResponse, ImageUploadResponse, UploadThingHeaderTypes } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Image as ImageType } from "@prisma/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction, Suspense, useState } from "react";
+import { Dispatch, SetStateAction, Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ClientUploadedFileData } from "uploadthing/types";
 
@@ -20,21 +21,12 @@ export function SelectImages({
     const handleClick = (imageId: number) => {
         setPictures((prev) => prev.map(({ selected, image }) => ({ selected: image.id === imageId ? !selected : selected, image })));
     };
-    const handleSave = () => {
+    const handleSave = async () => {
         setImages(pictures.filter(({ selected }) => selected).map(({ image }) => image));
-    };
-
-    const handleUploadComplete = async (res: ClientUploadedFileData<ImageUploadResponse>[]) => {
-        const imageIds = res
-            .map(({ serverData }) => (serverData.success ? `${serverData.imageId}` : false))
-            .filter((x) => typeof x === "string")
-            .map((x) => Number(x));
-        const resp = await fetch("/api/dashboard/products/edit/images", {
+        const data = await fetchJson<ApiResponse>("/api/dashboard/products/edit/images", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId, imageIds }),
+            body: JSON.stringify({ productId, images: pictures.filter(({ selected }) => selected).map(({ image }) => image) }),
         });
-        const data = (await resp.json()) as ApiResponse;
         if (data.status && data.type === "updateImages") {
             toast.success(data.message);
             setImages(data.result);
@@ -43,8 +35,12 @@ export function SelectImages({
         }
     };
 
-    const [isHidden, setIsHidden] = useState(true);
-    const toggle = () => setIsHidden((s) => !s);
+    const handleUploadComplete = async (res: ClientUploadedFileData<ImageUploadResponse>[]) => {
+        const dbImages = res.map((x) => (x.serverData.type === "image" ? x.serverData.dbImage : null)).filter(<T,>(x: T | null) => x !== null);
+        setImages((prev) => [...prev, ...dbImages]);
+        if (res.length > 0 && res[0].serverData.success) toast.success("Амжилттай");
+        else toast.error("Алдаа");
+    };
 
     return (
         <>
@@ -71,22 +67,21 @@ export function SelectImages({
                         </button>
                     );
                 })}
-                <button></button>
             </div>
-            {!isHidden && (
-                <div>
-                    <h3 className="font-bold text-lg">Зурагнууд нэмэх</h3>
-                    <div className="grid gap-2">
-                        <Suspense fallback={"Уншиж байна..."}>
-                            <UploadDropzone endpoint="imageUploader" onClientUploadComplete={handleUploadComplete} />
-                        </Suspense>
-                    </div>
+            <div>
+                <h3 className="font-bold text-lg">Зурагнууд нэмэх</h3>
+                <div className="grid gap-2">
+                    <Suspense fallback={"Уншиж байна..."}>
+                        <UploadDropzone
+                            config={{ appendOnPaste: true }}
+                            headers={{ type: "uploadMoreImages" as UploadThingHeaderTypes, productId: `${productId}` }}
+                            endpoint="imageUploader"
+                            onClientUploadComplete={handleUploadComplete}
+                        />
+                    </Suspense>
                 </div>
-            )}
+            </div>
             <div className="flex gap-4">
-                <button className="btn" disabled={!isHidden} onClick={toggle}>
-                    Нэмэх
-                </button>
                 <button className="btn" onClick={handleSave}>
                     Хадгалах
                 </button>

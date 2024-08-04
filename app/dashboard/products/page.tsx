@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { ProductSchema } from "@/lib/types";
+import { PlusSquareIcon } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page() {
@@ -13,6 +14,11 @@ export default async function Page() {
                         {fields.map((field, idx) => (
                             <th key={`${field}-${idx}`}>{field}</th>
                         ))}
+                        <th>
+                            <Link href={"/dashboard/products/create"}>
+                                <PlusSquareIcon />
+                            </Link>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

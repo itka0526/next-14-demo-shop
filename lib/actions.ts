@@ -4,17 +4,16 @@ import { redirect } from "next/navigation";
 import prisma from "./db";
 import {
     CreateProductSchema,
+    EditProductSchema,
     FormState,
     LoginUserSchema,
     RateProductSchema,
     RegisterUserSchema,
     SubscribeToNewsLetterSchema,
-    UserSchema,
 } from "./types";
 import { createSession } from "./auth";
 import { PrismaClientKnownRequestError, raw } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { getSession } from "./session-server";
 
 export async function registerUser(prevState: FormState, formData: FormData): Promise<FormState> {
@@ -192,13 +191,11 @@ export async function rateProduct(prevState: FormState | undefined, formData: Fo
     revalidatePath(`/details/${data.product.productName}`);
 }
 
-// : Promise<FormState>
 export async function createNewProduct(prevState: FormState | undefined, formData: FormData) {
     const session = await getSession();
     if (!session.userId) {
         redirect("/login");
     }
-
     try {
         const user = await prisma.user.findUnique({ where: { id: session.userId } });
         if (!user) {
@@ -221,7 +218,7 @@ export async function createNewProduct(prevState: FormState | undefined, formDat
         };
     }
     try {
-        const { description, featured, images, price, productDisplayName, productName, subCategoryId } = validatedFields.data;
+        const { description, featured, temproraryImageIds, price, productDisplayName, productName, subCategoryId } = validatedFields.data;
         await prisma.product.create({
             data: {
                 subCategoryId,
@@ -230,9 +227,18 @@ export async function createNewProduct(prevState: FormState | undefined, formDat
                 description,
                 price,
                 featured,
-                images: { connect: images.map((id) => ({ id })) },
+                images: {
+                    createMany: {
+                        data: await prisma.temporaryImage.findMany({
+                            where: {
+                                id: { in: temproraryImageIds },
+                            },
+                        }),
+                    },
+                },
             },
         });
+        await prisma.temporaryImage.deleteMany({ where: { id: { in: temproraryImageIds } } });
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
             switch (error.code) {
@@ -262,6 +268,44 @@ export async function createNewProduct(prevState: FormState | undefined, formDat
 }
 
 export async function editProduct(prevState: FormState | undefined, formData: FormData) {
-    console.log(formData);
-    return prevState;
+    const session = await getSession();
+    if (!session.userId) {
+        redirect("/login");
+    }
+    try {
+        const user = await prisma.user.findUnique({ where: { id: session.userId } });
+        if (!user) {
+            return {
+                errors: {},
+                message: "Тийм хэрэглэгч байхгүй байна",
+            };
+        }
+    } catch (error) {
+        return {
+            errors: {},
+            message: "Өгөгдлийн сан дээр алдаа гарлаа",
+        };
+    }
+    const validatedFields = EditProductSchema.safeParse(Object.fromEntries(formData.entries()));
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Дутуу талбаруудтай байна",
+        };
+    }
+
+    try {
+        const { productId: _, ...rest } = validatedFields.data;
+        await prisma.product.update({
+            where: { id: validatedFields.data.productId },
+            data: rest,
+        });
+    } catch (error) {
+        console.log(error);
+        return {
+            errors: {},
+            message: "Сервер дээр алдаа гарлаа.",
+        };
+    }
+    redirect(`/dashboard/products/edit/${validatedFields.data.productName}`);
 }

@@ -1,6 +1,6 @@
 import { SessionOptions } from "iron-session";
 import { typeToFlattenedError, z, ZodNumber, ZodType } from "zod";
-import { BasketedItem, Image, NewsletterSubscriber, Product, Review, User } from "@prisma/client";
+import { BasketedItem, Image, NewsletterSubscriber, Product, Review, TemporaryImage, User } from "@prisma/client";
 
 export const UserSchema = z.object({
     id: z.number(),
@@ -22,6 +22,18 @@ export const ProductSchema = z.object({
     price: z.coerce.number(),
     featured: z.boolean(),
 }) satisfies ZodType<Product>;
+
+export const ImageSchema = z.object({
+    id: z.number(),
+    productId: z.number(),
+    name: z.string(),
+    size: z.number(),
+    type: z.string(),
+    key: z.string(),
+    url: z.string(),
+}) satisfies ZodType<Image>;
+
+export const TemporaryImageSchema = ImageSchema.omit({ productId: true }) satisfies ZodType<TemporaryImage>;
 
 export const NewsletterSubscriberSchema = z.object({
     id: z.number(),
@@ -68,7 +80,7 @@ export const LoginUserSchema = UserSchema.omit({ id: true, createdAt: true, upda
 export const SubscribeToNewsLetterSchema = NewsletterSubscriberSchema.omit({ id: true, createdAt: true, updatedAt: true, subscribed: true });
 
 export const CreateProductSchema = ProductSchema.omit({ id: true, subCategoryId: true, featured: true }).extend({
-    images: z.preprocess((val) => {
+    temproraryImageIds: z.preprocess((val) => {
         if (typeof val === "string") {
             return val.split(",").map((x) => Number(x));
         }
@@ -84,12 +96,12 @@ export const CreateProductSchema = ProductSchema.omit({ id: true, subCategoryId:
 });
 
 export const EditProductSchema = ProductSchema.omit({ id: true, subCategoryId: true, featured: true }).extend({
-    images: z.preprocess((val) => {
-        if (typeof val === "string") {
-            return val.split(",").map((x) => Number(x));
+    productId: z.preprocess((val) => {
+        if (typeof val === "string" && !isNaN(Number(val))) {
+            return Number(val);
         }
         return val;
-    }, z.array(z.number())),
+    }, z.number()),
     subCategoryId: z.preprocess((val) => {
         if (typeof val === "string" && !isNaN(Number(val))) {
             return Number(val);
@@ -98,6 +110,8 @@ export const EditProductSchema = ProductSchema.omit({ id: true, subCategoryId: t
     }, z.number()),
     featured: z.preprocess((val) => val === "on", z.boolean()),
 });
+
+export const UpdateProductImageSchema = z.object({ images: ImageSchema.array() });
 
 export const RateProductSchema = ReviewProductSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
@@ -144,13 +158,25 @@ export type UseCartItemReturnType = {
 };
 
 export type ImageUploadResponse =
+    // For create-product.tsx
     | {
+          type: "temporaryImage";
           uploadedBy: User["name"];
           success: true;
-          imageId: number;
+          temproraryImageId: number;
+      }
+    // For edit-product.tsx
+    | {
+          type: "image";
+          uploadedBy: User["name"];
+          success: true;
+          dbImage: Image;
       }
     | {
+          type: "default";
           uploadedBy: User["name"];
           success: false;
           message: string;
       };
+
+export type UploadThingHeaderTypes = "uploadMoreImages" | "basic";

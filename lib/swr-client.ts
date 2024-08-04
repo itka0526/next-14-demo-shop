@@ -17,7 +17,7 @@ export const defaultApiResponse: ApiResponse = {
     status: false,
 };
 
-async function fetchJson<JSON = unknown>(input: RequestInfo, init?: RequestInit): Promise<JSON> {
+export async function fetchJson<JSON = unknown>(input: RequestInfo, init?: RequestInit): Promise<JSON> {
     return fetch(input, {
         headers: {
             accept: "application/json",

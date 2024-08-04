@@ -43,6 +43,10 @@ export function CreateProduct({
         }
     }, [formState?.message, formState?.errors]);
 
+    useEffect(() => {
+        console.log(images);
+    }, [images]);
+
     return (
         <form ref={formRef} className="grid gap-6" action={images.length > 0 ? formAction : () => {}}>
             <div className="grid gap-2">
@@ -55,9 +59,11 @@ export function CreateProduct({
                     readOnly={true}
                     className="hidden w-0 h-0"
                     type="text"
-                    name="images"
+                    name="temproraryImageIds"
                     value={images
-                        .map(({ serverData }) => (serverData.success ? `${serverData.imageId}` : false))
+                        .map(({ serverData }) =>
+                            serverData.success && serverData.type === "temporaryImage" ? `${serverData.temproraryImageId}` : false
+                        )
                         .filter(Boolean)
                         .join(",")}
                 />
