@@ -1,6 +1,6 @@
 import { SessionOptions } from "iron-session";
 import { typeToFlattenedError, z, ZodNumber, ZodType } from "zod";
-import { BasketedItem, NewsletterSubscriber, Product, Review, User } from "@prisma/client";
+import { BasketedItem, Image, NewsletterSubscriber, Product, Review, User } from "@prisma/client";
 
 export const UserSchema = z.object({
     id: z.number(),
@@ -83,6 +83,22 @@ export const CreateProductSchema = ProductSchema.omit({ id: true, subCategoryId:
     featured: z.preprocess((val) => val === "on", z.boolean()),
 });
 
+export const EditProductSchema = ProductSchema.omit({ id: true, subCategoryId: true, featured: true }).extend({
+    images: z.preprocess((val) => {
+        if (typeof val === "string") {
+            return val.split(",").map((x) => Number(x));
+        }
+        return val;
+    }, z.array(z.number())),
+    subCategoryId: z.preprocess((val) => {
+        if (typeof val === "string" && !isNaN(Number(val))) {
+            return Number(val);
+        }
+        return val;
+    }, z.number()),
+    featured: z.preprocess((val) => val === "on", z.boolean()),
+});
+
 export const RateProductSchema = ReviewProductSchema.omit({ id: true, createdAt: true, updatedAt: true });
 
 export const AddToCartItemSchema = UserBasketedItemSchema.omit({ id: true, createdAt: true, updatedAt: true });
@@ -96,6 +112,7 @@ export type FormState = {
         | z.infer<typeof SubscribeToNewsLetterSchema>
         | z.infer<typeof RateProductSchema>
         | z.infer<typeof CreateProductSchema>
+        | z.infer<typeof EditProductSchema>
     >["fieldErrors"];
     message?: string | null;
 };
@@ -116,6 +133,7 @@ export const sessionOptions: SessionOptions = {
 export type ApiResponse =
     | { message: string; status: true; result: BasketedItem[]; type: "basketedItems" }
     | { message: string; status: true; result: Product | null; type: "product" }
+    | { message: string; status: true; result: Image[]; type: "updateImages" }
     | { message: string; status: false };
 
 export type UseCartItemReturnType = {

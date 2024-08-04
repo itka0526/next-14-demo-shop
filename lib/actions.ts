@@ -260,3 +260,8 @@ export async function createNewProduct(prevState: FormState | undefined, formDat
         message: "Амжилттай.",
     };
 }
+
+export async function editProduct(prevState: FormState | undefined, formData: FormData) {
+    console.log(formData);
+    return prevState;
+}

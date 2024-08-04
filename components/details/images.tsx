@@ -51,7 +51,6 @@ export function Images({ images }: { images: ImagesProps }) {
                         alt={images[index].name}
                         height={800}
                         width={800}
-                        layout="responsive"
                         className="w-full h-full object-cover"
                         quality={QUALITY.main}
                         placeholder="blur"

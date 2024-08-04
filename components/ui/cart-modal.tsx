@@ -7,40 +7,25 @@ import Link from "next/link";
 import { Button } from "./button";
 import { UseCartItemReturnType } from "@/lib/types";
 import { createPortal } from "react-dom";
+import { useModal } from "../hooks/useModal";
 
 export function CartModal() {
-    const [isOpen, setIsOpen] = useState(false);
-    const ref = useRef<HTMLElement | null>(null);
-    useEffect(() => {
-        ref.current = document.getElementById("body");
-    }, []);
-    const handleClick = () => setIsOpen((s) => !s);
+    const { open, toggle, Modal, DefaultCloseButton } = useModal();
     return (
         <>
             <li>
-                <button onClick={handleClick}>
+                <button onClick={toggle}>
                     <div className="hidden md:block">
                         <ShoppingBasketIcon className="w-5 h-5 " />
                     </div>
                     <span className="block md:hidden">Сагс</span>
                 </button>
             </li>
-            {ref.current
-                ? createPortal(
-                      <dialog id="cart-modal" className={cn("modal", isOpen ? "modal-open" : "")}>
-                          <div className="modal-box">
-                              <h3 className="font-bold text-lg">Таны сагс</h3>
-                              {isOpen && <CartItems handleClick={handleClick} />}
-                              <div className="modal-action">
-                                  <button className="btn" onClick={handleClick}>
-                                      Хаах
-                                  </button>
-                              </div>
-                          </div>
-                      </dialog>,
-                      ref.current
-                  )
-                : null}
+            <Modal>
+                <h3 className="font-bold text-lg">Таны сагс</h3>
+                {open && <CartItems handleClick={toggle} />}
+                <DefaultCloseButton />
+            </Modal>
         </>
     );
 }
@@ -57,7 +42,7 @@ function CartItems({ handleClick }: { readonly handleClick: () => void }) {
         );
     }
     return (
-        <ul className="my-4">
+        <ul className="my-4 flex-col flex gap-4">
             {basketedItems.map((item) => (
                 <CartItem key={`cart-item-${item.id}`} productId={item.productId} handleClick={handleClick} useCartItem={useCartItem} />
             ))}
