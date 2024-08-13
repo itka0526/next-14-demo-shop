@@ -35,10 +35,11 @@ export default async function Home() {
                         </div>
                     </div>
                     <Image
-                        src="/placeholder.svg"
+                        quality={80}
+                        src="/landing.jpg"
                         width="600"
                         height="400"
-                        alt="Hero Product"
+                        alt="Landing Page"
                         className="mx-auto aspect-[3/2] overflow-hidden rounded-xl object-cover"
                     />
                 </div>
