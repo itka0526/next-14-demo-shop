@@ -64,7 +64,7 @@ export default async function Page({ params: { productName } }: Props) {
     } = product;
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto py-12 px-4 md:px-0">
+        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto py-12 px-0">
             <div className="grid gap-6">
                 <Images images={images} />
             </div>
@@ -82,7 +82,9 @@ export default async function Page({ params: { productName } }: Props) {
                     </p>
                 </div>
                 <Ratings productId={productId} />
-                <div className="text-4xl font-bold">{price.toLocaleString()}₮</div>
+                <div className="text-4xl font-bold">
+                    <span>{price > 0 ? `${price.toLocaleString()}₮` : `Үнэ байхгүй`}</span>
+                </div>
                 <AddToCart productId={productId} />
                 <div className="grid gap-4 text-sm leading-loose text-muted-foreground">
                     <p>{description}</p>

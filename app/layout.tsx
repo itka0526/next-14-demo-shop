@@ -15,6 +15,7 @@ import NextTopLoader from "nextjs-toploader";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { extractRouterConfig } from "uploadthing/server";
+import { Logo } from "@/components/ui/logo";
 
 export const revalidate = 60;
 
@@ -48,7 +49,7 @@ export default function RootLayout({
                                 <div className="flex w-full h-full items-center">
                                     <div className="mx-2 flex-1 px-2">
                                         <Link href="/">
-                                            <Image alt="logo.svg" src={logoIcon} priority height={72} />
+                                            <Logo />
                                         </Link>
                                     </div>
                                     <div className="hidden flex-none lg:block">
@@ -77,7 +78,7 @@ export default function RootLayout({
                                 </div>
                             </div>
                         </nav>
-                        <main className="flex min-h-screen flex-col items-center justify-between px-16">{children}</main>
+                        <main className="flex min-h-screen flex-col items-center justify-between px-8 md:px-16">{children}</main>
                     </div>
                     <div className="drawer-side">
                         <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
@@ -89,7 +90,7 @@ export default function RootLayout({
                 </div>
                 <footer className="footer footer-center bg-base-300 text-base-content p-4">
                     <aside>
-                        <p>Copyright © {new Date().getFullYear()} - Итгэлтийн бүх эрхийг хуулиар хамгаалсан</p>
+                        <p>Copyright © {new Date().getFullYear()}</p>
                     </aside>
                 </footer>
             </body>
