@@ -13,7 +13,7 @@ export async function ProductCard({ id, productName, productDisplayName, descrip
         LIMIT 1;
     `;
     return (
-        <div className="relative overflow-hidden rounded-lg group">
+        <div className="relative overflow-hidden rounded-lg group flex flex-col justify-between">
             <Link href={`/details/${productName}`} className="absolute inset-0 z-0" prefetch={false}>
                 <span className="sr-only">View</span>
             </Link>
@@ -23,7 +23,7 @@ export async function ProductCard({ id, productName, productDisplayName, descrip
                 width={400}
                 height={300}
                 quality={50}
-                className="object-cover w-full h-60 group-hover:opacity-50 transition-opacity"
+                className="object-cover max-w-full group-hover:opacity-50 transition-opacity"
             />
             <div className="p-4 bg-background">
                 <h3 className="text-lg font-semibold">{productDisplayName}</h3>
